@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { 
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-  Button, Input, Modal
+  Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter
 } from "@heroui/react";
 import { Plus, Edit, Trash2, Truck } from "lucide-react";
 import { getUnits, createUnit, updateUnit, deleteUnit, Unit } from "@/lib/services/unitService";
@@ -113,19 +113,15 @@ export default function UnitsPage() {
       </motion.header>
       
       <motion.div variants={itemVariants} className="rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden p-2">
-        <Table aria-label="Units Table" removeWrapper className="bg-transparent" classNames={{
-          th: "bg-slate-800/50 text-slate-300 font-bold border-b border-white/5",
-          td: "py-4 border-b border-white/5 text-slate-200",
-          tr: "hover:bg-slate-800/30 transition-colors"
-        }}>
+        <Table aria-label="Units Table" className="bg-transparent">
           <TableHeader>
             <TableColumn key="kode">KODE UNIT</TableColumn>
             <TableColumn key="jenis">JENIS UNIT</TableColumn>
             <TableColumn key="sn">SERIAL NUMBER</TableColumn>
             <TableColumn key="aksi">AKSI</TableColumn>
           </TableHeader>
-          <TableBody items={units} isLoading={isLoading}>
-            {(item) => (
+          <TableBody>
+            {units.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
@@ -150,19 +146,15 @@ export default function UnitsPage() {
                   </div>
                 </TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </motion.div>
 
-      <Modal isOpen={isOpen} onOpenChange={setIsOpen} classNames={{
-        base: "bg-slate-900 border border-white/10 shadow-2xl",
-        header: "border-b border-white/5",
-        footer: "border-t border-white/5"
-      }}>
-        <Modal.Content>
-          <Modal.Header className="flex flex-col gap-1 text-white">{editingId ? 'Edit Unit' : 'Tambah Unit Baru'}</Modal.Header>
-          <Modal.Body className="py-6">
+      <Modal isOpen={isOpen} onOpenChange={setIsOpen} className="bg-slate-900 border border-white/10 shadow-2xl">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 text-white border-b border-white/5">{editingId ? 'Edit Unit' : 'Tambah Unit Baru'}</ModalHeader>
+          <ModalBody className="py-6">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-300">Kode Unit</label>
@@ -170,7 +162,7 @@ export default function UnitsPage() {
                   value={kodeUnit} 
                   onChange={(e) => setKodeUnit(e.target.value)} 
                   placeholder="Contoh: PC200-8"
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -179,7 +171,7 @@ export default function UnitsPage() {
                   value={jenisUnit} 
                   onChange={(e) => setJenisUnit(e.target.value)} 
                   placeholder="Contoh: Excavator"
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -188,20 +180,20 @@ export default function UnitsPage() {
                   value={sn} 
                   onChange={(e) => setSn(e.target.value)} 
                   placeholder="Masukkan SN Unit"
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
             </div>
-          </Modal.Body>
-          <Modal.Footer>
+          </ModalBody>
+          <ModalFooter className="border-t border-white/5">
             <Button className="bg-transparent text-slate-400 hover:text-white" onPress={() => setIsOpen(false)}>
               Batal
             </Button>
             <Button className="bg-blue-600 text-white font-medium shadow-lg shadow-blue-500/30" onPress={() => handleSave()}>
               Simpan
             </Button>
-          </Modal.Footer>
-        </Modal.Content>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
     </motion.div>
   );

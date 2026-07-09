@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { 
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-  Button, Input, Modal, Drawer
+  Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
+  Drawer, DrawerContent, DrawerHeader, DrawerBody
 } from "@heroui/react";
 import { Plus, Edit, Trash2, Eye, MessageCircle, Mail, Users } from "lucide-react";
 import { getSuppliers, createSupplier, updateSupplier, deleteSupplier, Supplier } from "@/lib/services/supplierService";
@@ -136,19 +137,15 @@ export default function SuppliersPage() {
       </motion.header>
       
       <motion.div variants={itemVariants} className="rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden p-2">
-        <Table aria-label="Suppliers Table" removeWrapper className="bg-transparent" classNames={{
-          th: "bg-slate-800/50 text-slate-300 font-bold border-b border-white/5",
-          td: "py-4 border-b border-white/5 text-slate-200",
-          tr: "hover:bg-slate-800/30 transition-colors"
-        }}>
+        <Table aria-label="Suppliers Table" className="bg-transparent">
           <TableHeader>
             <TableColumn key="nama">NAMA SUPPLIER</TableColumn>
             <TableColumn key="kontak">KONTAK UTAMA</TableColumn>
             <TableColumn key="quick_actions">AKSI CEPAT</TableColumn>
             <TableColumn key="aksi">AKSI</TableColumn>
           </TableHeader>
-          <TableBody items={suppliers} isLoading={isLoading}>
-            {(item) => (
+          <TableBody isLoading={isLoading}>
+            {suppliers.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>
                   <div className="flex items-center gap-3">
@@ -189,19 +186,15 @@ export default function SuppliersPage() {
                   </div>
                 </TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </motion.div>
 
-      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen} classNames={{
-        base: "bg-slate-900 border border-white/10 shadow-2xl",
-        header: "border-b border-white/5",
-        footer: "border-t border-white/5"
-      }}>
-        <Modal.Content>
-          <Modal.Header className="flex flex-col gap-1 text-white">{editingId ? 'Edit Supplier' : 'Tambah Supplier Baru'}</Modal.Header>
-          <Modal.Body className="py-6">
+      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen} className="bg-slate-900 border border-white/10 shadow-2xl">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 text-white border-b border-white/5">{editingId ? 'Edit Supplier' : 'Tambah Supplier Baru'}</ModalHeader>
+          <ModalBody className="py-6">
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-300">Nama Supplier *</label>
@@ -210,7 +203,7 @@ export default function SuppliersPage() {
                   value={namaSupplier} 
                   onChange={(e) => setNamaSupplier(e.target.value)} 
                   required
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -220,7 +213,7 @@ export default function SuppliersPage() {
                     placeholder="Contoh: 021-123456"
                     value={noTelp} 
                     onChange={(e) => setNoTelp(e.target.value)} 
-                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                    className="text-white"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
@@ -229,7 +222,7 @@ export default function SuppliersPage() {
                     value={noWa} 
                     onChange={(e) => setNoWa(e.target.value)} 
                     placeholder="+628..."
-                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                    className="text-white"
                   />
                 </div>
               </div>
@@ -240,7 +233,7 @@ export default function SuppliersPage() {
                   type="email"
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -249,7 +242,7 @@ export default function SuppliersPage() {
                   placeholder="Alamat"
                   value={alamat} 
                   onChange={(e) => setAlamat(e.target.value)} 
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -258,29 +251,26 @@ export default function SuppliersPage() {
                   placeholder="Fax"
                   value={fax} 
                   onChange={(e) => setFax(e.target.value)} 
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
             </div>
-          </Modal.Body>
-          <Modal.Footer>
+          </ModalBody>
+          <ModalFooter className="border-t border-white/5">
             <Button className="bg-transparent text-slate-400 hover:text-white" onPress={() => setIsModalOpen(false)}>
               Batal
             </Button>
             <Button className="bg-blue-600 text-white font-medium shadow-lg shadow-blue-500/30" onPress={() => handleSave()}>
               Simpan
             </Button>
-          </Modal.Footer>
-        </Modal.Content>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
 
-      <Drawer isOpen={isDrawerOpen} onOpenChange={setIsDrawerOpen} classNames={{
-        base: "bg-slate-900 border-l border-white/10",
-        header: "border-b border-white/5 text-white"
-      }}>
-        <Drawer.Content>
-          <Drawer.Header className="flex flex-col gap-1">Detail Supplier</Drawer.Header>
-          <Drawer.Body>
+      <Drawer isOpen={isDrawerOpen} onOpenChange={setIsDrawerOpen} className="bg-slate-900 border-l border-white/10">
+        <DrawerContent>
+          <DrawerHeader className="flex flex-col gap-1 border-b border-white/5 text-white">Detail Supplier</DrawerHeader>
+          <DrawerBody>
             {selectedSupplier && (
               <div className="flex flex-col gap-6 mt-4">
                 <div className="flex items-center gap-4">
@@ -322,8 +312,8 @@ export default function SuppliersPage() {
                 </div>
               </div>
             )}
-          </Drawer.Body>
-        </Drawer.Content>
+          </DrawerBody>
+        </DrawerContent>
       </Drawer>
     </motion.div>
   );

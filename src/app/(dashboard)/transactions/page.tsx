@@ -3,15 +3,14 @@
 import { useState, useEffect } from "react";
 import { 
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
-  Button, Input, Chip
+  Button, Input, Chip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter
 } from "@heroui/react";
 import { Upload, Search, Plus, ReceiptText } from "lucide-react";
 import Link from "next/link";
 import { getRecentTransactions, createTransaction, Transaction } from "@/lib/services/transactionService";
 import { getUnits, Unit } from "@/lib/services/unitService";
 import { getSuppliers, Supplier } from "@/lib/services/supplierService";
-import { Modal } from "@heroui/react";
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -102,12 +101,12 @@ export default function TransactionsPage() {
     }
   };
 
-  const containerVariants: Variants = {
+  const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
-  const itemVariants: Variants = {
+  const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
@@ -143,13 +142,11 @@ export default function TransactionsPage() {
       
       <motion.div variants={itemVariants} className="flex gap-4 items-center">
         <Input
-          className="max-w-md"
+          className="max-w-md text-white"
           aria-label="Cari transaksi"
           placeholder="Cari nama barang, no PO, unit, supplier..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          startContent={<Search className="text-slate-400" size={18}/>}
-          classNames={{ inputWrapper: "bg-slate-900/50 border border-white/10 hover:bg-slate-800 focus-within:!bg-slate-900", input: "text-white" }}
         />
         <div className="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-bold tracking-wider">
           TERBARU: 100 ENTRI
@@ -157,11 +154,7 @@ export default function TransactionsPage() {
       </motion.div>
 
       <motion.div variants={itemVariants} className="rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden p-2">
-        <Table aria-label="Transactions Table" removeWrapper className="bg-transparent" classNames={{
-          th: "bg-slate-800/50 text-slate-300 font-bold border-b border-white/5",
-          td: "py-4 border-b border-white/5 text-slate-200",
-          tr: "hover:bg-slate-800/30 transition-colors"
-        }}>
+        <Table aria-label="Transactions Table" className="bg-transparent">
           <TableHeader>
             <TableColumn key="tanggal">TANGGAL ORDER</TableColumn>
             <TableColumn key="nopo">NO PO</TableColumn>
@@ -169,10 +162,10 @@ export default function TransactionsPage() {
             <TableColumn key="supplier">SUPPLIER</TableColumn>
             <TableColumn key="barang">NAMA BARANG</TableColumn>
             <TableColumn key="qty">QTY</TableColumn>
-            <TableColumn key="total" align="end">TOTAL (DPP+PPN)</TableColumn>
+            <TableColumn key="total">TOTAL (DPP+PPN)</TableColumn>
           </TableHeader>
-          <TableBody items={filteredTransactions} isLoading={isLoading}>
-            {(item) => (
+          <TableBody isLoading={isLoading}>
+            {filteredTransactions.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>
                   <span className="text-slate-300 font-medium">{formatDate(item.tanggalOrder)}</span>
@@ -197,26 +190,22 @@ export default function TransactionsPage() {
                   Rp {(item.dpp + item.ppn).toLocaleString('id-ID')}
                 </TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </motion.div>
 
-      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen} classNames={{
-        base: "bg-slate-900 border border-white/10 shadow-2xl max-w-2xl",
-        header: "border-b border-white/5",
-        footer: "border-t border-white/5"
-      }}>
-        <Modal.Content>
-          <Modal.Header className="flex flex-col gap-1 text-white">Tambah Transaksi Baru</Modal.Header>
-          <Modal.Body className="py-6">
+      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen} className="bg-slate-900 border border-white/10 shadow-2xl max-w-2xl">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 text-white border-b border-white/5">Tambah Transaksi Baru</ModalHeader>
+          <ModalBody className="py-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-300">No PO *</label>
                 <Input 
                   placeholder="No PO (Contoh: PO-2023-001)" 
                   value={noPo} onChange={(e) => setNoPo(e.target.value)} 
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -224,7 +213,7 @@ export default function TransactionsPage() {
                 <Input 
                   value={new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(new Date())} 
                   disabled
-                  classNames={{ inputWrapper: "bg-slate-800/50 border border-white/5 opacity-70", input: "text-slate-400 font-medium" }}
+                  className="text-slate-400 font-medium opacity-70"
                 />
               </div>
 
@@ -255,7 +244,7 @@ export default function TransactionsPage() {
                 <Input 
                   placeholder="Nama barang atau jasa" 
                   value={namaBarang} onChange={(e) => setNamaBarang(e.target.value)} 
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  className="text-white"
                 />
               </div>
 
@@ -265,12 +254,12 @@ export default function TransactionsPage() {
                   <Input 
                     type="number" placeholder="Qty" 
                     value={qty.toString()} onChange={(e) => setQty(Number(e.target.value))} 
-                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                    className="text-white"
                   />
                   <Input 
                     placeholder="PCS" 
                     value={satuan} onChange={(e) => setSatuan(e.target.value)} 
-                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                    className="text-white"
                   />
                 </div>
               </div>
@@ -280,8 +269,7 @@ export default function TransactionsPage() {
                 <Input 
                   type="number" placeholder="0" 
                   value={hargaSatuan.toString()} onChange={(e) => setHargaSatuan(Number(e.target.value))} 
-                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white font-bold text-lg" }}
-                  startContent={<span className="text-slate-400 mr-1">Rp</span>}
+                  className="text-white font-bold text-lg"
                 />
               </div>
 
@@ -296,12 +284,12 @@ export default function TransactionsPage() {
                 </div>
               </div>
             </div>
-          </Modal.Body>
-          <Modal.Footer>
+          </ModalBody>
+          <ModalFooter className="border-t border-white/5">
             <Button className="bg-transparent text-slate-400 hover:text-white" onPress={() => setIsModalOpen(false)}>Batal</Button>
             <Button className="bg-blue-600 text-white font-medium shadow-lg shadow-blue-500/30" onPress={handleSave}>Simpan Transaksi</Button>
-          </Modal.Footer>
-        </Modal.Content>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
     </motion.div>
   );
