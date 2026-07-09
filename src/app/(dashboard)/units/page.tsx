@@ -80,7 +80,7 @@ export default function UnitsPage() {
     <div className="p-8 flex flex-col gap-6">
       <header className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Units</h1>
-        <Button color="primary" onPress={openAddModal} startContent={<Plus size={18} />}>
+        <Button variant="primary" onPress={openAddModal} startContent={<Plus size={18} />}>
           Add Unit
         </Button>
       </header>
@@ -92,7 +92,7 @@ export default function UnitsPage() {
           <TableColumn>SERIAL NUMBER</TableColumn>
           <TableColumn>ACTIONS</TableColumn>
         </TableHeader>
-        <TableBody emptyContent={isLoading ? "Loading..." : "No units found."} items={units}>
+        <TableBody items={units}>
           {(item) => (
             <TableRow key={item.id}>
               <TableCell>{item.kodeUnit}</TableCell>
@@ -103,7 +103,7 @@ export default function UnitsPage() {
                   <Button isIconOnly size="sm" variant="light" onPress={() => openEditModal(item)}>
                     <Edit size={16} />
                   </Button>
-                  <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => handleDelete(item.id!)}>
+                  <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(item.id!)}>
                     <Trash2 size={16} />
                   </Button>
                 </div>
@@ -114,40 +114,37 @@ export default function UnitsPage() {
       </Table>
 
       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
-        <Modal.Content>
-          {() => (
-            <>
-              <Modal.Header className="flex flex-col gap-1">{editingId ? 'Edit Unit' : 'Add Unit'}</Modal.Header>
-              <Modal.Body>
-                <Input 
-                  label="Kode Unit" 
-                  value={kodeUnit} 
-                  onChange={(e) => setKodeUnit(e.target.value)} 
-                  placeholder="e.g. BD 46"
-                />
-                <Input 
-                  label="Jenis Unit" 
-                  value={jenisUnit} 
-                  onChange={(e) => setJenisUnit(e.target.value)} 
-                  placeholder="e.g. D85ESS-2"
-                />
-                <Input 
-                  label="Serial Number (SN)" 
-                  value={sn} 
-                  onChange={(e) => setSn(e.target.value)} 
-                />
-              </Modal.Body>
-              <Modal.Footer>
-                <Button color="danger" variant="light" onPress={() => setIsOpen(false)}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={() => handleSave()}>
-                  Save
-                </Button>
-              </Modal.Footer>
-            </>
-          )}
-        </Modal.Content>
+        <Modal.Dialog>
+          <Modal.Header className="flex flex-col gap-1">{editingId ? 'Edit Unit' : 'Add Unit'}</Modal.Header>
+          <Modal.Body>
+            <Input 
+              aria-label="Kode Unit" 
+              value={kodeUnit} 
+              onChange={(e) => setKodeUnit(e.target.value)} 
+              placeholder="Kode Unit (e.g. BD 46)"
+            />
+            <Input 
+              aria-label="Jenis Unit" 
+              value={jenisUnit} 
+              onChange={(e) => setJenisUnit(e.target.value)} 
+              placeholder="Jenis Unit (e.g. D85ESS-2)"
+            />
+            <Input 
+              aria-label="Serial Number (SN)" 
+              value={sn} 
+              onChange={(e) => setSn(e.target.value)} 
+              placeholder="Serial Number (SN)"
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger-soft" onPress={() => setIsOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onPress={() => handleSave()}>
+              Save
+            </Button>
+          </Modal.Footer>
+        </Modal.Dialog>
       </Modal>
     </div>
   );

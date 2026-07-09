@@ -103,7 +103,7 @@ export default function SuppliersPage() {
     <div className="p-8 flex flex-col gap-6">
       <header className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Suppliers</h1>
-        <Button color="primary" onPress={openAddModal} startContent={<Plus size={18} />}>
+        <Button variant="primary" onPress={openAddModal} startContent={<Plus size={18} />}>
           Add Supplier
         </Button>
       </header>
@@ -115,7 +115,7 @@ export default function SuppliersPage() {
           <TableColumn>QUICK ACTIONS</TableColumn>
           <TableColumn>ACTIONS</TableColumn>
         </TableHeader>
-        <TableBody emptyContent={isLoading ? "Loading..." : "No suppliers found."} items={suppliers}>
+        <TableBody items={suppliers}>
           {(item) => (
             <TableRow key={item.id}>
               <TableCell className="font-semibold">{item.namaSupplier}</TableCell>
@@ -136,13 +136,13 @@ export default function SuppliersPage() {
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  <Button isIconOnly size="sm" variant="light" onPress={() => openDetailsDrawer(item)}>
+                  <Button isIconOnly size="sm" variant="ghost" onPress={() => openDetailsDrawer(item)}>
                     <Eye size={16} />
                   </Button>
-                  <Button isIconOnly size="sm" variant="light" onPress={() => openEditModal(item)}>
+                  <Button isIconOnly size="sm" variant="ghost" onPress={() => openEditModal(item)}>
                     <Edit size={16} />
                   </Button>
-                  <Button isIconOnly size="sm" variant="light" color="danger" onPress={() => handleDelete(item.id!)}>
+                  <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(item.id!)}>
                     <Trash2 size={16} />
                   </Button>
                 </div>
@@ -153,99 +153,96 @@ export default function SuppliersPage() {
       </Table>
 
       <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
-        <Modal.Content>
-          {() => (
-            <>
-              <Modal.Header className="flex flex-col gap-1">{editingId ? 'Edit Supplier' : 'Add Supplier'}</Modal.Header>
-              <Modal.Body>
-                <Input 
-                  label="Nama Supplier *" 
-                  value={namaSupplier} 
-                  onChange={(e) => setNamaSupplier(e.target.value)} 
-                  isRequired
-                />
-                <Input 
-                  label="No. Telepon" 
-                  value={noTelp} 
-                  onChange={(e) => setNoTelp(e.target.value)} 
-                />
-                <Input 
-                  label="No. WhatsApp" 
-                  value={noWa} 
-                  onChange={(e) => setNoWa(e.target.value)} 
-                  placeholder="+628..."
-                />
-                <Input 
-                  label="Email" 
-                  type="email"
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                />
-                <Input 
-                  label="Alamat" 
-                  value={alamat} 
-                  onChange={(e) => setAlamat(e.target.value)} 
-                />
-                <Input 
-                  label="Fax" 
-                  value={fax} 
-                  onChange={(e) => setFax(e.target.value)} 
-                />
-              </Modal.Body>
-              <Modal.Footer>
-                <Button color="danger" variant="light" onPress={() => setIsModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button color="primary" onPress={() => handleSave()}>
-                  Save
-                </Button>
-              </Modal.Footer>
-            </>
-          )}
-        </Modal.Content>
+        <Modal.Dialog>
+          <Modal.Header className="flex flex-col gap-1">{editingId ? 'Edit Supplier' : 'Add Supplier'}</Modal.Header>
+          <Modal.Body>
+            <Input 
+              aria-label="Nama Supplier *" 
+              placeholder="Nama Supplier *"
+              value={namaSupplier} 
+              onChange={(e) => setNamaSupplier(e.target.value)} 
+              isRequired
+            />
+            <Input 
+              aria-label="No. Telepon" 
+              placeholder="No. Telepon"
+              value={noTelp} 
+              onChange={(e) => setNoTelp(e.target.value)} 
+            />
+            <Input 
+              aria-label="No. WhatsApp" 
+              value={noWa} 
+              onChange={(e) => setNoWa(e.target.value)} 
+              placeholder="+628... (No. WhatsApp)"
+            />
+            <Input 
+              aria-label="Email" 
+              placeholder="Email"
+              type="email"
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+            />
+            <Input 
+              aria-label="Alamat" 
+              placeholder="Alamat"
+              value={alamat} 
+              onChange={(e) => setAlamat(e.target.value)} 
+            />
+            <Input 
+              aria-label="Fax" 
+              placeholder="Fax"
+              value={fax} 
+              onChange={(e) => setFax(e.target.value)} 
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger-soft" onPress={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onPress={() => handleSave()}>
+              Save
+            </Button>
+          </Modal.Footer>
+        </Modal.Dialog>
       </Modal>
 
       <Drawer isOpen={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <Drawer.Content>
-          {() => (
-            <>
-              <Drawer.Header className="flex flex-col gap-1">Detail Supplier</Drawer.Header>
-              <Drawer.Body>
-                {selectedSupplier && (
-                  <div className="flex flex-col gap-4 mt-4">
-                    <div>
-                      <h4 className="text-default-500 text-sm font-medium">Nama Supplier</h4>
-                      <p className="text-lg font-semibold">{selectedSupplier.namaSupplier}</p>
-                    </div>
-                    <div>
-                      <h4 className="text-default-500 text-sm font-medium">Alamat</h4>
-                      <p>{selectedSupplier.alamat || "-"}</p>
-                    </div>
-                    <div>
-                      <h4 className="text-default-500 text-sm font-medium">No. Telepon</h4>
-                      <p>{selectedSupplier.noTelp || "-"}</p>
-                    </div>
-                    <div>
-                      <h4 className="text-default-500 text-sm font-medium">No. WhatsApp</h4>
-                      <p>{selectedSupplier.noWa || "-"}</p>
-                    </div>
-                    <div>
-                      <h4 className="text-default-500 text-sm font-medium">Email</h4>
-                      <p>{selectedSupplier.email || "-"}</p>
-                    </div>
-                    <div>
-                      <h4 className="text-default-500 text-sm font-medium">Fax</h4>
-                      <p>{selectedSupplier.fax || "-"}</p>
-                    </div>
-                    <div className="mt-6">
-                      <h4 className="text-default-500 text-sm font-medium border-b pb-2 mb-2">Riwayat Transaksi</h4>
-                      <p className="text-default-400 text-sm italic">Fitur riwayat transaksi akan tersedia di fase selanjutnya.</p>
-                    </div>
-                  </div>
-                )}
-              </Drawer.Body>
-            </>
-          )}
+          <Drawer.Header className="flex flex-col gap-1">Detail Supplier</Drawer.Header>
+          <Drawer.Body>
+            {selectedSupplier && (
+              <div className="flex flex-col gap-4 mt-4">
+                <div>
+                  <h4 className="text-default-500 text-sm font-medium">Nama Supplier</h4>
+                  <p className="text-lg font-semibold">{selectedSupplier.namaSupplier}</p>
+                </div>
+                <div>
+                  <h4 className="text-default-500 text-sm font-medium">Alamat</h4>
+                  <p>{selectedSupplier.alamat || "-"}</p>
+                </div>
+                <div>
+                  <h4 className="text-default-500 text-sm font-medium">No. Telepon</h4>
+                  <p>{selectedSupplier.noTelp || "-"}</p>
+                </div>
+                <div>
+                  <h4 className="text-default-500 text-sm font-medium">No. WhatsApp</h4>
+                  <p>{selectedSupplier.noWa || "-"}</p>
+                </div>
+                <div>
+                  <h4 className="text-default-500 text-sm font-medium">Email</h4>
+                  <p>{selectedSupplier.email || "-"}</p>
+                </div>
+                <div>
+                  <h4 className="text-default-500 text-sm font-medium">Fax</h4>
+                  <p>{selectedSupplier.fax || "-"}</p>
+                </div>
+                <div className="mt-6">
+                  <h4 className="text-default-500 text-sm font-medium border-b pb-2 mb-2">Riwayat Transaksi</h4>
+                  <p className="text-default-400 text-sm italic">Fitur riwayat transaksi akan tersedia di fase selanjutnya.</p>
+                </div>
+              </div>
+            )}
+          </Drawer.Body>
         </Drawer.Content>
       </Drawer>
     </div>

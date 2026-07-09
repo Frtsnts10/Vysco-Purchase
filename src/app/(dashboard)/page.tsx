@@ -5,21 +5,13 @@ import { Card } from "@heroui/react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getDashboardStats } from "@/lib/services/dashboardService";
 
-const mockChartData = [
-  { name: 'Jan', pengeluaran: 40000000 },
-  { name: 'Feb', pengeluaran: 30000000 },
-  { name: 'Mar', pengeluaran: 20000000 },
-  { name: 'Apr', pengeluaran: 27800000 },
-  { name: 'May', pengeluaran: 18900000 },
-  { name: 'Jun', pengeluaran: 23900000 },
-  { name: 'Jul', pengeluaran: 34900000 },
-];
-
+ 
 export default function Home() {
   const [stats, setStats] = useState({
     totalPengeluaran: 0,
     transactionCount: 0,
-    unitTermahal: "Memuat..."
+    unitTermahal: "Memuat...",
+    chartData: [{ name: 'Current', pengeluaran: 0 }]
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -83,7 +75,7 @@ export default function Home() {
         <div className="flex-1 w-full h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
-              data={mockChartData}
+              data={stats.chartData}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />

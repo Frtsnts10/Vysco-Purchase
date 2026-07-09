@@ -1,4 +1,4 @@
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 
 export interface Transaction {
@@ -28,4 +28,18 @@ export const getRecentTransactions = async (max: number = 100): Promise<Transact
     id: doc.id,
     ...doc.data()
   } as Transaction));
+};
+
+export const createTransaction = async (data: Omit<Transaction, "id">) => {
+  return await addDoc(transactionsCol, data);
+};
+
+export const updateTransaction = async (id: string, data: Partial<Transaction>) => {
+  const docRef = doc(db, COLLECTION_NAME, id);
+  return await updateDoc(docRef, data);
+};
+
+export const deleteTransaction = async (id: string) => {
+  const docRef = doc(db, COLLECTION_NAME, id);
+  return await deleteDoc(docRef);
 };

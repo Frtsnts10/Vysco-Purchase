@@ -1,4 +1,4 @@
-import { collection, getAggregateFromServer, sum, count, query, where, Timestamp } from "firebase/firestore";
+import { collection, getDocs, query, where, Timestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
 export const getDashboardStats = async () => {
@@ -16,32 +16,55 @@ export const getDashboardStats = async () => {
   );
 
   try {
-    const snapshot = await getAggregateFromServer(currentMonthQuery, {
-      totalDpp: sum("dpp"),
-      totalPpn: sum("ppn"),
-      transactionCount: count()
+    const snapshot = await getDocs(currentMonthQuery);
+    let totalDpp = 0;
+    let totalPpn = 0;
+    let maxHargaSatuan = 0;
+    let unitTermahal = "-";
+
+    snapshot.forEach((doc) => {
+      const d = doc.data();
+      totalDpp += (d.dpp || 0);
+      totalPpn += (d.ppn || 0);
+      
+      if (d.hargaSatuan > maxHargaSatuan) {
+        maxHargaSatuan = d.hargaSatuan;
+        unitTermahal = d.kodeUnit || "-";
+      }
     });
 
-    const data = snapshot.data();
+    const transactionCount = snapshot.size;
     
-    // Total Pengeluaran
-    const totalPengeluaran = (data.totalDpp || 0) + (data.totalPpn || 0);
-    
-    // For unit termahal, we'd ideally use a complex group by, but firestore 
-    // doesn't support GROUP BY natively yet. We'll leave it as a placeholder 
-    // or return a mock value for now. 
+    // Group by month for the chart
+    const monthlyData: Record<string, number> = {};
+    snapshot.forEach((doc) => {
+      const d = doc.data();
+      const date = d.tanggalOrder?.toDate ? d.tanggalOrder.toDate() : new Date(d.tanggalOrder || Date.now());
+      const monthName = date.toLocaleString('default', { month: 'short' });
+      monthlyData[monthName] = (monthlyData[monthName] || 0) + ((d.dpp || 0) + (d.ppn || 0));
+    });
+
+    // Format for Recharts
+    const chartData = Object.keys(monthlyData).map(month => ({
+      name: month,
+      pengeluaran: monthlyData[month]
+    }));
+
+    const totalPengeluaran = totalDpp + totalPpn;
 
     return {
       totalPengeluaran,
-      transactionCount: data.transactionCount || 0,
-      unitTermahal: "Memuat..." // Placeholder, would need a custom aggregation function
+      transactionCount: transactionCount,
+      unitTermahal: unitTermahal || "-",
+      chartData: chartData.length > 0 ? chartData : [{ name: 'Current', pengeluaran: 0 }]
     };
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);
     return {
       totalPengeluaran: 0,
       transactionCount: 0,
-      unitTermahal: "-"
+      unitTermahal: "-",
+      chartData: [{ name: 'Current', pengeluaran: 0 }]
     };
   }
 };
