@@ -84,11 +84,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-slate-950/50 border-white/10 text-white placeholder:text-slate-600 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
-                  classNames={{
-                    input: "text-white",
-                    inputWrapper: "bg-slate-800/50 border-white/5 hover:bg-slate-800 focus-within:!bg-slate-800"
-                  }}
+                  className="bg-slate-950/50 border border-white/10 text-white placeholder:text-slate-600 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl px-4 py-2 hover:bg-slate-800 focus-within:!bg-slate-800 transition-colors"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -99,10 +95,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  classNames={{
-                    input: "text-white",
-                    inputWrapper: "bg-slate-800/50 border-white/5 hover:bg-slate-800 focus-within:!bg-slate-800"
-                  }}
+                  className="bg-slate-950/50 border border-white/10 text-white placeholder:text-slate-600 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl px-4 py-2 hover:bg-slate-800 focus-within:!bg-slate-800 transition-colors"
                 />
               </div>
               
