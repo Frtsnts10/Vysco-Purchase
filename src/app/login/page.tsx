@@ -48,30 +48,34 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-primary">Vysco PO</h1>
           <p className="text-default-500 text-sm">Masuk ke Dasbor Manajemen Pembelian</p>
         </Card.Header>
-        <Card.Body>
+        <Card.Content>
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <Input
-              label="Email"
-              type="email"
-              placeholder="admin@vysco.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              isRequired
-            />
-            <Input
-              label="Kata Sandi"
-              type="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              isRequired
-            />
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Email</label>
+              <Input
+                type="email"
+                placeholder="admin@vysco.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Kata Sandi</label>
+              <Input
+                type="password"
+                placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
             {error && <p className="text-danger text-sm">{error}</p>}
-            <Button color="primary" type="submit" isLoading={isLoggingIn} className="mt-2">
-              Masuk
+            <Button variant="primary" type="submit" isDisabled={isLoggingIn} className="mt-2">
+              {isLoggingIn ? "Memuat..." : "Masuk"}
             </Button>
           </form>
-        </Card.Body>
+        </Card.Content>
       </Card>
     </div>
   );

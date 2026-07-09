@@ -103,8 +103,11 @@ export default function SuppliersPage() {
     <div className="p-8 flex flex-col gap-6">
       <header className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Suppliers</h1>
-        <Button variant="primary" onPress={openAddModal} startContent={<Plus size={18} />}>
-          Add Supplier
+        <Button variant="primary" onPress={openAddModal}>
+          <div className="flex items-center gap-2">
+            <Plus size={18} />
+            Add Supplier
+          </div>
         </Button>
       </header>
       
@@ -156,44 +159,56 @@ export default function SuppliersPage() {
         <Modal.Dialog>
           <Modal.Header className="flex flex-col gap-1">{editingId ? 'Edit Supplier' : 'Add Supplier'}</Modal.Header>
           <Modal.Body>
-            <Input 
-              aria-label="Nama Supplier *" 
-              placeholder="Nama Supplier *"
-              value={namaSupplier} 
-              onChange={(e) => setNamaSupplier(e.target.value)} 
-              isRequired
-            />
-            <Input 
-              aria-label="No. Telepon" 
-              placeholder="No. Telepon"
-              value={noTelp} 
-              onChange={(e) => setNoTelp(e.target.value)} 
-            />
-            <Input 
-              aria-label="No. WhatsApp" 
-              value={noWa} 
-              onChange={(e) => setNoWa(e.target.value)} 
-              placeholder="+628... (No. WhatsApp)"
-            />
-            <Input 
-              aria-label="Email" 
-              placeholder="Email"
-              type="email"
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-            />
-            <Input 
-              aria-label="Alamat" 
-              placeholder="Alamat"
-              value={alamat} 
-              onChange={(e) => setAlamat(e.target.value)} 
-            />
-            <Input 
-              aria-label="Fax" 
-              placeholder="Fax"
-              value={fax} 
-              onChange={(e) => setFax(e.target.value)} 
-            />
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Nama Supplier *</label>
+              <Input 
+                placeholder="Nama Supplier"
+                value={namaSupplier} 
+                onChange={(e) => setNamaSupplier(e.target.value)} 
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">No. Telepon</label>
+              <Input 
+                placeholder="No. Telepon"
+                value={noTelp} 
+                onChange={(e) => setNoTelp(e.target.value)} 
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">No. WhatsApp</label>
+              <Input 
+                value={noWa} 
+                onChange={(e) => setNoWa(e.target.value)} 
+                placeholder="+628... (No. WhatsApp)"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Email</label>
+              <Input 
+                placeholder="Email"
+                type="email"
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Alamat</label>
+              <Input 
+                placeholder="Alamat"
+                value={alamat} 
+                onChange={(e) => setAlamat(e.target.value)} 
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Fax</label>
+              <Input 
+                placeholder="Fax"
+                value={fax} 
+                onChange={(e) => setFax(e.target.value)} 
+              />
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger-soft" onPress={() => setIsModalOpen(false)}>

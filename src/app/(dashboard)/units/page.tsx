@@ -80,8 +80,11 @@ export default function UnitsPage() {
     <div className="p-8 flex flex-col gap-6">
       <header className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Units</h1>
-        <Button variant="primary" onPress={openAddModal} startContent={<Plus size={18} />}>
-          Add Unit
+        <Button variant="primary" onPress={openAddModal}>
+          <div className="flex items-center gap-2">
+            <Plus size={18} />
+            Add Unit
+          </div>
         </Button>
       </header>
       
@@ -100,7 +103,7 @@ export default function UnitsPage() {
               <TableCell>{item.sn}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  <Button isIconOnly size="sm" variant="light" onPress={() => openEditModal(item)}>
+                  <Button isIconOnly size="sm" variant="ghost" onPress={() => openEditModal(item)}>
                     <Edit size={16} />
                   </Button>
                   <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(item.id!)}>
@@ -117,24 +120,30 @@ export default function UnitsPage() {
         <Modal.Dialog>
           <Modal.Header className="flex flex-col gap-1">{editingId ? 'Edit Unit' : 'Add Unit'}</Modal.Header>
           <Modal.Body>
-            <Input 
-              aria-label="Kode Unit" 
-              value={kodeUnit} 
-              onChange={(e) => setKodeUnit(e.target.value)} 
-              placeholder="Kode Unit (e.g. BD 46)"
-            />
-            <Input 
-              aria-label="Jenis Unit" 
-              value={jenisUnit} 
-              onChange={(e) => setJenisUnit(e.target.value)} 
-              placeholder="Jenis Unit (e.g. D85ESS-2)"
-            />
-            <Input 
-              aria-label="Serial Number (SN)" 
-              value={sn} 
-              onChange={(e) => setSn(e.target.value)} 
-              placeholder="Serial Number (SN)"
-            />
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Kode Unit</label>
+              <Input 
+                value={kodeUnit} 
+                onChange={(e) => setKodeUnit(e.target.value)} 
+                placeholder="Kode Unit (e.g. BD 46)"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Jenis Unit</label>
+              <Input 
+                value={jenisUnit} 
+                onChange={(e) => setJenisUnit(e.target.value)} 
+                placeholder="Jenis Unit (e.g. D85ESS-2)"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium">Serial Number (SN)</label>
+              <Input 
+                value={sn} 
+                onChange={(e) => setSn(e.target.value)} 
+                placeholder="Serial Number (SN)"
+              />
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="danger-soft" onPress={() => setIsOpen(false)}>

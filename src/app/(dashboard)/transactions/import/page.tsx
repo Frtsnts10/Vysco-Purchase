@@ -50,7 +50,7 @@ export default function ImportPage() {
 
         // Find duplicates within the file (example: same PO and same item)
         const seen = new Set();
-        mappedData.forEach(item => {
+        mappedData.forEach((item: any) => {
           const key = `${item.noPo}-${item.namaBarang}`;
           if (seen.has(key)) {
             item.isDuplicate = true;
@@ -96,13 +96,13 @@ export default function ImportPage() {
     <div className="p-8 flex flex-col gap-6">
       <header className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Import PO Excel</h1>
-        {status === "review" && (
+        {(status === "review" || status === "uploading") && (
           <Button 
-            color="primary" 
+            variant="primary" 
             onPress={handleProcessImport} 
-            isLoading={status === "uploading"}
+            isDisabled={status === "uploading"}
           >
-            Process Import ({data.length} rows)
+            {status === "uploading" ? "Processing..." : `Process Import (${data.length} rows)`}
           </Button>
         )}
       </header>
@@ -139,8 +139,8 @@ export default function ImportPage() {
             ref={fileInputRef}
             onChange={handleFileUpload}
           />
-          <Button color="primary" onPress={() => fileInputRef.current?.click()} isLoading={isProcessing}>
-            Select File
+          <Button variant="primary" onPress={() => fileInputRef.current?.click()} isDisabled={isProcessing}>
+            {isProcessing ? "Loading..." : "Select File"}
           </Button>
         </div>
       )}
@@ -149,12 +149,12 @@ export default function ImportPage() {
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center bg-default-100 p-4 rounded-lg">
             <p className="font-medium">Previewing {data.length} rows</p>
-            <Button size="sm" variant="flat" onPress={() => {setData([]); setStatus("idle");}}>
+            <Button size="sm" variant="ghost" onPress={() => {setData([]); setStatus("idle");}}>
               Cancel & Upload Different File
             </Button>
           </div>
           
-          <Table aria-label="Preview Table" className="bg-background max-h-[600px]" isHeaderSticky>
+          <Table aria-label="Preview Table" className="bg-background max-h-[600px]">
             <TableHeader>
               <TableColumn>KODE UNIT</TableColumn>
               <TableColumn>NO PO</TableColumn>
@@ -172,7 +172,7 @@ export default function ImportPage() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {item.namaBarang}
-                      {item.isDuplicate && <AlertCircle size={14} className="text-danger" title="Possible duplicate in this file" />}
+                      {item.isDuplicate && <AlertCircle size={14} className="text-danger" aria-label="Possible duplicate in this file" />}
                     </div>
                   </TableCell>
                   <TableCell>{item.qty} {item.satuan}</TableCell>
