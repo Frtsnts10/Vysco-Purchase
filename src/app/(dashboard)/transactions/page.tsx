@@ -163,13 +163,13 @@ export default function TransactionsPage() {
           tr: "hover:bg-slate-800/30 transition-colors"
         }}>
           <TableHeader>
-            <TableColumn>TANGGAL ORDER</TableColumn>
-            <TableColumn>NO PO</TableColumn>
-            <TableColumn>UNIT</TableColumn>
-            <TableColumn>SUPPLIER</TableColumn>
-            <TableColumn>NAMA BARANG</TableColumn>
-            <TableColumn>QTY</TableColumn>
-            <TableColumn align="end">TOTAL (DPP+PPN)</TableColumn>
+            <TableColumn key="tanggal">TANGGAL ORDER</TableColumn>
+            <TableColumn key="nopo">NO PO</TableColumn>
+            <TableColumn key="unit">UNIT</TableColumn>
+            <TableColumn key="supplier">SUPPLIER</TableColumn>
+            <TableColumn key="barang">NAMA BARANG</TableColumn>
+            <TableColumn key="qty">QTY</TableColumn>
+            <TableColumn key="total" align="end">TOTAL (DPP+PPN)</TableColumn>
           </TableHeader>
           <TableBody items={filteredTransactions} isLoading={isLoading}>
             {(item) => (

@@ -142,10 +142,10 @@ export default function SuppliersPage() {
           tr: "hover:bg-slate-800/30 transition-colors"
         }}>
           <TableHeader>
-            <TableColumn>NAMA SUPPLIER</TableColumn>
-            <TableColumn>KONTAK UTAMA</TableColumn>
-            <TableColumn>AKSI CEPAT</TableColumn>
-            <TableColumn>AKSI</TableColumn>
+            <TableColumn key="nama">NAMA SUPPLIER</TableColumn>
+            <TableColumn key="kontak">KONTAK UTAMA</TableColumn>
+            <TableColumn key="quick_actions">AKSI CEPAT</TableColumn>
+            <TableColumn key="aksi">AKSI</TableColumn>
           </TableHeader>
           <TableBody items={suppliers} isLoading={isLoading}>
             {(item) => (

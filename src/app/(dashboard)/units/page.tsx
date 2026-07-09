@@ -119,10 +119,10 @@ export default function UnitsPage() {
           tr: "hover:bg-slate-800/30 transition-colors"
         }}>
           <TableHeader>
-            <TableColumn>KODE UNIT</TableColumn>
-            <TableColumn>JENIS UNIT</TableColumn>
-            <TableColumn>SERIAL NUMBER</TableColumn>
-            <TableColumn>AKSI</TableColumn>
+            <TableColumn key="kode">KODE UNIT</TableColumn>
+            <TableColumn key="jenis">JENIS UNIT</TableColumn>
+            <TableColumn key="sn">SERIAL NUMBER</TableColumn>
+            <TableColumn key="aksi">AKSI</TableColumn>
           </TableHeader>
           <TableBody items={units} isLoading={isLoading}>
             {(item) => (
