@@ -84,7 +84,7 @@ export default function Home() {
                 tickFormatter={(value) => `Rp ${(value / 1000000)}M`}
               />
               <Tooltip 
-                formatter={(value: number) => [`Rp ${value.toLocaleString('id-ID')}`, 'Pengeluaran']}
+                formatter={(value: any) => [`Rp ${Number(value || 0).toLocaleString('id-ID')}`, 'Pengeluaran']}
               />
               <Line type="monotone" dataKey="pengeluaran" stroke="#006FEE" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 8 }} />
             </LineChart>
