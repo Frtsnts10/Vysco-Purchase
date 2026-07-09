@@ -2,6 +2,24 @@ import { collection, getDocs, query, where, Timestamp } from "firebase/firestore
 import { db } from "../firebase";
 
 export const getDashboardStats = async () => {
+  // If using dummy account, return mock data directly
+  if (typeof window !== "undefined" && localStorage.getItem("vysco_dummy_auth") === "true") {
+    return {
+      totalPengeluaran: 145000000, // Rp 145M
+      transactionCount: 24,
+      unitTermahal: "PC200-8",
+      chartData: [
+        { name: 'Jan', pengeluaran: 40000000 },
+        { name: 'Feb', pengeluaran: 30000000 },
+        { name: 'Mar', pengeluaran: 20000000 },
+        { name: 'Apr', pengeluaran: 27800000 },
+        { name: 'May', pengeluaran: 18900000 },
+        { name: 'Jun', pengeluaran: 23900000 },
+        { name: 'Jul', pengeluaran: 34900000 },
+      ]
+    };
+  }
+
   const transactionsCol = collection(db, "transactions");
   
   // Get current month's start and end dates
