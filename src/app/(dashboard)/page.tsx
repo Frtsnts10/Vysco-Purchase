@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "@heroui/react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
-import { getDashboardStats } from "@/lib/services/dashboardService";
-import { motion } from "framer-motion";
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { motion, Variants } from "framer-motion";
 import { TrendingUp, AlertTriangle, Wallet, FileText, Truck } from "lucide-react";
+import { getDashboardStats } from "@/lib/services/dashboardService";
 
 export default function Home() {
   const [stats, setStats] = useState({
@@ -30,7 +30,7 @@ export default function Home() {
     loadStats();
   }, []);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
@@ -38,7 +38,7 @@ export default function Home() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
