@@ -5,9 +5,10 @@ import {
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
   Button, Input, Modal, Drawer
 } from "@heroui/react";
-import { Plus, Edit, Trash2, Eye, MessageCircle, Mail } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, MessageCircle, Mail, Users } from "lucide-react";
 import { getSuppliers, createSupplier, updateSupplier, deleteSupplier, Supplier } from "@/lib/services/supplierService";
 import Link from "next/link";
+import { motion, Variants } from "framer-motion";
 
 export default function SuppliersPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -99,167 +100,231 @@ export default function SuppliersPage() {
     }
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="p-8 flex flex-col gap-6">
-      <header className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Suppliers</h1>
-        <Button variant="primary" onPress={openAddModal}>
+    <motion.div 
+      className="flex flex-col gap-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.header variants={itemVariants} className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+            Daftar Supplier
+          </h1>
+          <p className="text-slate-400 mt-2 font-medium">Kelola data vendor dan penyedia suku cadang.</p>
+        </div>
+        <Button 
+          className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30 border-none font-semibold"
+          onPress={openAddModal}
+        >
           <div className="flex items-center gap-2">
             <Plus size={18} />
-            Add Supplier
+            Tambah Supplier
           </div>
         </Button>
-      </header>
+      </motion.header>
       
-      <Table aria-label="Suppliers Table" className="bg-background">
-        <TableHeader>
-          <TableColumn>NAMA SUPPLIER</TableColumn>
-          <TableColumn>KONTAK UTAMA</TableColumn>
-          <TableColumn>QUICK ACTIONS</TableColumn>
-          <TableColumn>ACTIONS</TableColumn>
-        </TableHeader>
-        <TableBody items={suppliers}>
-          {(item) => (
-            <TableRow key={item.id}>
-              <TableCell className="font-semibold">{item.namaSupplier}</TableCell>
-              <TableCell>{item.noTelp || item.noWa || item.email || "-"}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  {item.noWa && (
-                    <Link href={`https://wa.me/${item.noWa.replace(/\D/g, '')}`} target="_blank" className="text-success hover:opacity-70 transition-opacity">
-                      <MessageCircle size={18} />
-                    </Link>
-                  )}
-                  {item.email && (
-                    <Link href={`mailto:${item.email}`} className="text-primary hover:opacity-70 transition-opacity">
-                      <Mail size={18} />
-                    </Link>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button isIconOnly size="sm" variant="ghost" onPress={() => openDetailsDrawer(item)}>
-                    <Eye size={16} />
-                  </Button>
-                  <Button isIconOnly size="sm" variant="ghost" onPress={() => openEditModal(item)}>
-                    <Edit size={16} />
-                  </Button>
-                  <Button isIconOnly size="sm" variant="danger-soft" onPress={() => handleDelete(item.id!)}>
-                    <Trash2 size={16} />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <motion.div variants={itemVariants} className="rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden p-2">
+        <Table aria-label="Suppliers Table" removeWrapper className="bg-transparent" classNames={{
+          th: "bg-slate-800/50 text-slate-300 font-bold border-b border-white/5",
+          td: "py-4 border-b border-white/5 text-slate-200",
+          tr: "hover:bg-slate-800/30 transition-colors"
+        }}>
+          <TableHeader>
+            <TableColumn>NAMA SUPPLIER</TableColumn>
+            <TableColumn>KONTAK UTAMA</TableColumn>
+            <TableColumn>AKSI CEPAT</TableColumn>
+            <TableColumn>AKSI</TableColumn>
+          </TableHeader>
+          <TableBody items={suppliers} isLoading={isLoading}>
+            {(item) => (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded bg-indigo-500/10 flex items-center justify-center shrink-0">
+                      <Users size={16} className="text-indigo-400" />
+                    </div>
+                    <span className="font-bold text-white">{item.namaSupplier}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="text-slate-300 font-medium">{item.noTelp || item.noWa || item.email || "-"}</span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-3">
+                    {item.noWa && (
+                      <Link href={`https://wa.me/${item.noWa.replace(/\D/g, '')}`} target="_blank" className="text-emerald-400 hover:text-emerald-300 hover:scale-110 transition-all bg-emerald-500/10 p-2 rounded-lg">
+                        <MessageCircle size={18} />
+                      </Link>
+                    )}
+                    {item.email && (
+                      <Link href={`mailto:${item.email}`} className="text-blue-400 hover:text-blue-300 hover:scale-110 transition-all bg-blue-500/10 p-2 rounded-lg">
+                        <Mail size={18} />
+                      </Link>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <Button isIconOnly size="sm" className="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400" onPress={() => openDetailsDrawer(item)}>
+                      <Eye size={16} />
+                    </Button>
+                    <Button isIconOnly size="sm" className="bg-slate-800 hover:bg-slate-700 text-slate-300" onPress={() => openEditModal(item)}>
+                      <Edit size={16} />
+                    </Button>
+                    <Button isIconOnly size="sm" className="bg-red-500/10 hover:bg-red-500/20 text-red-400" onPress={() => handleDelete(item.id!)}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </motion.div>
 
-      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
-        <Modal.Dialog>
-          <Modal.Header className="flex flex-col gap-1">{editingId ? 'Edit Supplier' : 'Add Supplier'}</Modal.Header>
-          <Modal.Body>
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">Nama Supplier *</label>
-              <Input 
-                placeholder="Nama Supplier"
-                value={namaSupplier} 
-                onChange={(e) => setNamaSupplier(e.target.value)} 
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">No. Telepon</label>
-              <Input 
-                placeholder="No. Telepon"
-                value={noTelp} 
-                onChange={(e) => setNoTelp(e.target.value)} 
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">No. WhatsApp</label>
-              <Input 
-                value={noWa} 
-                onChange={(e) => setNoWa(e.target.value)} 
-                placeholder="+628... (No. WhatsApp)"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">Email</label>
-              <Input 
-                placeholder="Email"
-                type="email"
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">Alamat</label>
-              <Input 
-                placeholder="Alamat"
-                value={alamat} 
-                onChange={(e) => setAlamat(e.target.value)} 
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium">Fax</label>
-              <Input 
-                placeholder="Fax"
-                value={fax} 
-                onChange={(e) => setFax(e.target.value)} 
-              />
+      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen} classNames={{
+        base: "bg-slate-900 border border-white/10 shadow-2xl",
+        header: "border-b border-white/5",
+        footer: "border-t border-white/5"
+      }}>
+        <Modal.Content>
+          <Modal.Header className="flex flex-col gap-1 text-white">{editingId ? 'Edit Supplier' : 'Tambah Supplier Baru'}</Modal.Header>
+          <Modal.Body className="py-6">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Nama Supplier *</label>
+                <Input 
+                  placeholder="Nama Supplier"
+                  value={namaSupplier} 
+                  onChange={(e) => setNamaSupplier(e.target.value)} 
+                  required
+                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-slate-300">No. Telepon</label>
+                  <Input 
+                    placeholder="Contoh: 021-123456"
+                    value={noTelp} 
+                    onChange={(e) => setNoTelp(e.target.value)} 
+                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-slate-300">No. WhatsApp</label>
+                  <Input 
+                    value={noWa} 
+                    onChange={(e) => setNoWa(e.target.value)} 
+                    placeholder="+628..."
+                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Email</label>
+                <Input 
+                  placeholder="Email"
+                  type="email"
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Alamat</label>
+                <Input 
+                  placeholder="Alamat"
+                  value={alamat} 
+                  onChange={(e) => setAlamat(e.target.value)} 
+                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Fax</label>
+                <Input 
+                  placeholder="Fax"
+                  value={fax} 
+                  onChange={(e) => setFax(e.target.value)} 
+                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                />
+              </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger-soft" onPress={() => setIsModalOpen(false)}>
-              Cancel
+            <Button className="bg-transparent text-slate-400 hover:text-white" onPress={() => setIsModalOpen(false)}>
+              Batal
             </Button>
-            <Button variant="primary" onPress={() => handleSave()}>
-              Save
+            <Button className="bg-blue-600 text-white font-medium shadow-lg shadow-blue-500/30" onPress={() => handleSave()}>
+              Simpan
             </Button>
           </Modal.Footer>
-        </Modal.Dialog>
+        </Modal.Content>
       </Modal>
 
-      <Drawer isOpen={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+      <Drawer isOpen={isDrawerOpen} onOpenChange={setIsDrawerOpen} classNames={{
+        base: "bg-slate-900 border-l border-white/10",
+        header: "border-b border-white/5 text-white"
+      }}>
         <Drawer.Content>
           <Drawer.Header className="flex flex-col gap-1">Detail Supplier</Drawer.Header>
           <Drawer.Body>
             {selectedSupplier && (
-              <div className="flex flex-col gap-4 mt-4">
-                <div>
-                  <h4 className="text-default-500 text-sm font-medium">Nama Supplier</h4>
-                  <p className="text-lg font-semibold">{selectedSupplier.namaSupplier}</p>
+              <div className="flex flex-col gap-6 mt-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0 border border-indigo-500/20">
+                    <Users size={32} className="text-indigo-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Nama Supplier</h4>
+                    <p className="text-2xl font-extrabold text-white">{selectedSupplier.namaSupplier}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-default-500 text-sm font-medium">Alamat</h4>
-                  <p>{selectedSupplier.alamat || "-"}</p>
+                
+                <div className="grid grid-cols-2 gap-4 mt-2">
+                  <div className="p-4 rounded-xl bg-slate-800/50 border border-white/5">
+                    <h4 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">No. Telepon</h4>
+                    <p className="text-slate-200 font-medium">{selectedSupplier.noTelp || "-"}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-800/50 border border-white/5">
+                    <h4 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">No. WhatsApp</h4>
+                    <p className="text-slate-200 font-medium">{selectedSupplier.noWa || "-"}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-800/50 border border-white/5 col-span-2">
+                    <h4 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Email</h4>
+                    <p className="text-slate-200 font-medium">{selectedSupplier.email || "-"}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-800/50 border border-white/5 col-span-2">
+                    <h4 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Alamat Lengkap</h4>
+                    <p className="text-slate-200 font-medium leading-relaxed">{selectedSupplier.alamat || "-"}</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-slate-800/50 border border-white/5 col-span-2">
+                    <h4 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Fax</h4>
+                    <p className="text-slate-200 font-medium">{selectedSupplier.fax || "-"}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-default-500 text-sm font-medium">No. Telepon</h4>
-                  <p>{selectedSupplier.noTelp || "-"}</p>
-                </div>
-                <div>
-                  <h4 className="text-default-500 text-sm font-medium">No. WhatsApp</h4>
-                  <p>{selectedSupplier.noWa || "-"}</p>
-                </div>
-                <div>
-                  <h4 className="text-default-500 text-sm font-medium">Email</h4>
-                  <p>{selectedSupplier.email || "-"}</p>
-                </div>
-                <div>
-                  <h4 className="text-default-500 text-sm font-medium">Fax</h4>
-                  <p>{selectedSupplier.fax || "-"}</p>
-                </div>
-                <div className="mt-6">
-                  <h4 className="text-default-500 text-sm font-medium border-b pb-2 mb-2">Riwayat Transaksi</h4>
-                  <p className="text-default-400 text-sm italic">Fitur riwayat transaksi akan tersedia di fase selanjutnya.</p>
+
+                <div className="mt-4 p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
+                  <h4 className="text-blue-400 text-sm font-bold border-b border-blue-500/20 pb-2 mb-3">Riwayat Transaksi</h4>
+                  <p className="text-blue-300/70 text-sm italic">Fitur riwayat transaksi akan tersedia di fase selanjutnya.</p>
                 </div>
               </div>
             )}
           </Drawer.Body>
         </Drawer.Content>
       </Drawer>
-    </div>
+    </motion.div>
   );
 }

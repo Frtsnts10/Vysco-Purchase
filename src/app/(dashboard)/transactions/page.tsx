@@ -5,12 +5,13 @@ import {
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
   Button, Input, Chip
 } from "@heroui/react";
-import { Upload, Search, Plus } from "lucide-react";
+import { Upload, Search, Plus, ReceiptText } from "lucide-react";
 import Link from "next/link";
 import { getRecentTransactions, createTransaction, Transaction } from "@/lib/services/transactionService";
 import { getUnits, Unit } from "@/lib/services/unitService";
 import { getSuppliers, Supplier } from "@/lib/services/supplierService";
 import { Modal } from "@heroui/react";
+import { motion, Variants } from "framer-motion";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -101,113 +102,207 @@ export default function TransactionsPage() {
     }
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="p-8 flex flex-col gap-6">
-      <header className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Riwayat Transaksi (PO)</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onPress={() => setIsModalOpen(true)}>
-            <Plus size={18} /> Add Manual
+    <motion.div 
+      className="flex flex-col gap-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.header variants={itemVariants} className="flex justify-between items-center mb-4">
+        <div>
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">
+            Riwayat Transaksi (PO)
+          </h1>
+          <p className="text-slate-400 mt-2 font-medium">Pantau dan kelola seluruh transaksi Purchase Order Anda.</p>
+        </div>
+        <div className="flex gap-3">
+          <Button 
+            className="bg-slate-800 hover:bg-slate-700 text-white border border-white/10 font-semibold"
+            onPress={() => setIsModalOpen(true)}
+          >
+            <Plus size={18} /> Tambah Manual
           </Button>
           <Link href="/transactions/import">
-            <Button variant="primary">
+            <Button className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30 border-none font-semibold">
               <Upload size={18} /> Import Excel
             </Button>
           </Link>
         </div>
-      </header>
+      </motion.header>
       
-      <div className="flex gap-4 items-center">
+      <motion.div variants={itemVariants} className="flex gap-4 items-center">
         <Input
           className="max-w-md"
           aria-label="Cari transaksi"
-          placeholder="Cari nama barang, no PO, unit..."
+          placeholder="Cari nama barang, no PO, unit, supplier..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          startContent={<Search className="text-slate-400" size={18}/>}
+          classNames={{ inputWrapper: "bg-slate-900/50 border border-white/10 hover:bg-slate-800 focus-within:!bg-slate-900", input: "text-white" }}
         />
-        <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">Latest 100 entries</div>
-      </div>
+        <div className="px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-bold tracking-wider">
+          TERBARU: 100 ENTRI
+        </div>
+      </motion.div>
 
-      <Table aria-label="Transactions Table" className="bg-background max-h-[700px]">
-        <TableHeader>
-          <TableColumn>TANGGAL ORDER</TableColumn>
-          <TableColumn>NO PO</TableColumn>
-          <TableColumn>UNIT</TableColumn>
-          <TableColumn>SUPPLIER</TableColumn>
-          <TableColumn>NAMA BARANG</TableColumn>
-          <TableColumn>QTY</TableColumn>
-          <TableColumn>TOTAL (DPP+PPN)</TableColumn>
-        </TableHeader>
-        <TableBody items={filteredTransactions}>
-          {(item) => (
-            <TableRow key={item.id}>
-              <TableCell>{formatDate(item.tanggalOrder)}</TableCell>
-              <TableCell className="font-medium text-primary">{item.noPo}</TableCell>
-              <TableCell>
-                <span className="px-2 py-1 bg-default-100 rounded-md text-xs">{item.kodeUnit}</span>
-              </TableCell>
-              <TableCell>{item.supplierNama}</TableCell>
-              <TableCell>{item.namaBarang}</TableCell>
-              <TableCell>{item.qty} {item.satuan}</TableCell>
-              <TableCell className="font-semibold">
-                Rp {(item.dpp + item.ppn).toLocaleString('id-ID')}
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <motion.div variants={itemVariants} className="rounded-2xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden p-2">
+        <Table aria-label="Transactions Table" removeWrapper className="bg-transparent" classNames={{
+          th: "bg-slate-800/50 text-slate-300 font-bold border-b border-white/5",
+          td: "py-4 border-b border-white/5 text-slate-200",
+          tr: "hover:bg-slate-800/30 transition-colors"
+        }}>
+          <TableHeader>
+            <TableColumn>TANGGAL ORDER</TableColumn>
+            <TableColumn>NO PO</TableColumn>
+            <TableColumn>UNIT</TableColumn>
+            <TableColumn>SUPPLIER</TableColumn>
+            <TableColumn>NAMA BARANG</TableColumn>
+            <TableColumn>QTY</TableColumn>
+            <TableColumn align="end">TOTAL (DPP+PPN)</TableColumn>
+          </TableHeader>
+          <TableBody items={filteredTransactions} isLoading={isLoading}>
+            {(item) => (
+              <TableRow key={item.id}>
+                <TableCell>
+                  <span className="text-slate-300 font-medium">{formatDate(item.tanggalOrder)}</span>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <ReceiptText size={16} className="text-blue-400" />
+                    <span className="font-bold text-blue-400">{item.noPo}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="px-3 py-1 bg-slate-800 border border-white/5 rounded-md text-xs font-mono text-slate-300">
+                    {item.kodeUnit}
+                  </span>
+                </TableCell>
+                <TableCell>{item.supplierNama}</TableCell>
+                <TableCell className="font-medium text-white">{item.namaBarang}</TableCell>
+                <TableCell>
+                  <span className="font-bold">{item.qty}</span> <span className="text-xs text-slate-400 uppercase">{item.satuan}</span>
+                </TableCell>
+                <TableCell className="font-extrabold text-white text-right">
+                  Rp {(item.dpp + item.ppn).toLocaleString('id-ID')}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </motion.div>
 
-      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
-        <Modal.Dialog>
-          <Modal.Header className="flex flex-col gap-1">Add Transaction</Modal.Header>
-          <Modal.Body>
-            <Input 
-              aria-label="No PO" placeholder="No PO" 
-              value={noPo} onChange={(e) => setNoPo(e.target.value)} 
-            />
-            <select 
-              className="w-full p-2 border rounded bg-background text-foreground"
-              value={unitId} onChange={(e) => setUnitId(e.target.value)}
-            >
-              <option value="">Select Unit...</option>
-              {units.map(u => <option key={u.id} value={u.id!}>{u.kodeUnit}</option>)}
-            </select>
-            <select 
-              className="w-full p-2 border rounded bg-background text-foreground"
-              value={supplierId} onChange={(e) => setSupplierId(e.target.value)}
-            >
-              <option value="">Select Supplier...</option>
-              {suppliers.map(s => <option key={s.id} value={s.id!}>{s.namaSupplier}</option>)}
-            </select>
-            <Input 
-              aria-label="Nama Barang" placeholder="Nama Barang" 
-              value={namaBarang} onChange={(e) => setNamaBarang(e.target.value)} 
-            />
-            <div className="flex gap-2">
-              <Input 
-                aria-label="Qty" type="number" placeholder="Qty" 
-                value={qty.toString()} onChange={(e) => setQty(Number(e.target.value))} 
-              />
-              <Input 
-                aria-label="Satuan" placeholder="Satuan (PCS)" 
-                value={satuan} onChange={(e) => setSatuan(e.target.value)} 
-              />
-            </div>
-            <Input 
-              aria-label="Harga Satuan" type="number" placeholder="Harga Satuan (Rp)" 
-              value={hargaSatuan.toString()} onChange={(e) => setHargaSatuan(Number(e.target.value))} 
-            />
-            <div className="p-3 bg-default-100 rounded-lg text-sm flex justify-between">
-              <span>DPP: Rp {(qty * hargaSatuan).toLocaleString('id-ID')}</span>
-              <span>PPN: Rp {(qty * hargaSatuan * 0.11).toLocaleString('id-ID')}</span>
+      <Modal isOpen={isModalOpen} onOpenChange={setIsModalOpen} classNames={{
+        base: "bg-slate-900 border border-white/10 shadow-2xl max-w-2xl",
+        header: "border-b border-white/5",
+        footer: "border-t border-white/5"
+      }}>
+        <Modal.Content>
+          <Modal.Header className="flex flex-col gap-1 text-white">Tambah Transaksi Baru</Modal.Header>
+          <Modal.Body className="py-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">No PO *</label>
+                <Input 
+                  placeholder="No PO (Contoh: PO-2023-001)" 
+                  value={noPo} onChange={(e) => setNoPo(e.target.value)} 
+                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Tanggal Order</label>
+                <Input 
+                  value={new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(new Date())} 
+                  disabled
+                  classNames={{ inputWrapper: "bg-slate-800/50 border border-white/5 opacity-70", input: "text-slate-400 font-medium" }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Pilih Unit *</label>
+                <select 
+                  className="w-full p-2.5 border border-white/5 rounded-xl bg-slate-800 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  value={unitId} onChange={(e) => setUnitId(e.target.value)}
+                >
+                  <option value="">Pilih Unit...</option>
+                  {units.map(u => <option key={u.id} value={u.id!}>{u.kodeUnit} - {u.jenisUnit}</option>)}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Pilih Supplier *</label>
+                <select 
+                  className="w-full p-2.5 border border-white/5 rounded-xl bg-slate-800 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  value={supplierId} onChange={(e) => setSupplierId(e.target.value)}
+                >
+                  <option value="">Pilih Supplier...</option>
+                  {suppliers.map(s => <option key={s.id} value={s.id!}>{s.namaSupplier}</option>)}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2 col-span-2">
+                <label className="text-sm font-medium text-slate-300">Nama Barang *</label>
+                <Input 
+                  placeholder="Nama barang atau jasa" 
+                  value={namaBarang} onChange={(e) => setNamaBarang(e.target.value)} 
+                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Kuantitas & Satuan *</label>
+                <div className="flex gap-2">
+                  <Input 
+                    type="number" placeholder="Qty" 
+                    value={qty.toString()} onChange={(e) => setQty(Number(e.target.value))} 
+                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  />
+                  <Input 
+                    placeholder="PCS" 
+                    value={satuan} onChange={(e) => setSatuan(e.target.value)} 
+                    classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white" }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-300">Harga Satuan (Rp) *</label>
+                <Input 
+                  type="number" placeholder="0" 
+                  value={hargaSatuan.toString()} onChange={(e) => setHargaSatuan(Number(e.target.value))} 
+                  classNames={{ inputWrapper: "bg-slate-800 border border-white/5 hover:bg-slate-700 focus-within:!bg-slate-800", input: "text-white font-bold text-lg" }}
+                  startContent={<span className="text-slate-400 mr-1">Rp</span>}
+                />
+              </div>
+
+              <div className="col-span-2 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl mt-2 flex justify-between items-center">
+                <div>
+                  <div className="text-sm text-blue-300/80 mb-1">DPP: Rp {(qty * hargaSatuan).toLocaleString('id-ID')}</div>
+                  <div className="text-sm text-blue-300/80">PPN (11%): Rp {(qty * hargaSatuan * 0.11).toLocaleString('id-ID')}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Total Biaya</div>
+                  <div className="text-2xl font-extrabold text-white">Rp {(qty * hargaSatuan * 1.11).toLocaleString('id-ID')}</div>
+                </div>
+              </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger-soft" onPress={() => setIsModalOpen(false)}>Cancel</Button>
-            <Button variant="primary" onPress={handleSave}>Save</Button>
+            <Button className="bg-transparent text-slate-400 hover:text-white" onPress={() => setIsModalOpen(false)}>Batal</Button>
+            <Button className="bg-blue-600 text-white font-medium shadow-lg shadow-blue-500/30" onPress={handleSave}>Simpan Transaksi</Button>
           </Modal.Footer>
-        </Modal.Dialog>
+        </Modal.Content>
       </Modal>
-    </div>
+    </motion.div>
   );
 }
