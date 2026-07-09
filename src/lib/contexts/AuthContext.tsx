@@ -23,6 +23,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Dummy account check
+    if (typeof window !== "undefined" && localStorage.getItem("vysco_dummy_auth") === "true") {
+      setUser({ email: "admin@vysco.com", uid: "dummy-123", displayName: "Admin" } as User);
+      setLoading(false);
+      return () => {};
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -33,7 +40,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     try {
-      await firebaseSignOut(auth);
+      if (typeof window !== "undefined" && localStorage.getItem("vysco_dummy_auth") === "true") {
+        localStorage.removeItem("vysco_dummy_auth");
+        setUser(null);
+      } else {
+        await firebaseSignOut(auth);
+      }
     } catch (error) {
       console.error("Error signing out: ", error);
     }

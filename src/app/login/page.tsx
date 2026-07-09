@@ -26,6 +26,13 @@ export default function LoginPage() {
     setIsLoggingIn(true);
     setError("");
 
+    // DUMMY ACCOUNT BYPASS
+    if (email === "admin@vysco.com" && password === "admin123") {
+      localStorage.setItem("vysco_dummy_auth", "true");
+      window.location.href = "/";
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/");
